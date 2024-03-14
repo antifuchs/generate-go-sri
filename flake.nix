@@ -6,10 +6,13 @@
   inputs.tailscale.url = "github:tailscale/tailscale";
 
   outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-        #./flake-module.nix
-      ];
+    flake-parts.lib.mkFlake {inherit inputs;} ({
+      withSystem,
+      flake-parts-lib,
+      ...
+    }: let
+      inherit (flake-parts-lib) importApply;
+    in {
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
 
       perSystem = {
@@ -30,21 +33,9 @@
             goPackagePath = "github.com/tailscale/tailscale/cmd/nardump";
           };
         };
-
-        apps = {
-          generate-sri.program = pkgs.writeShellApplication {
-            name = "generate-sri";
-            runtimeInputs = [config.packages.nardump];
-            text = ''
-              temp="$(mktemp -d)"
-              trap 'rm -rf "$temp"' EXIT
-              go mod vendor -o "$temp"
-              nardump -sri "$temp"
-            '';
-          };
-        };
       };
       flake = {
+        flakeModules.default = ./flake-module.nix;
       };
-    };
+    });
 }
