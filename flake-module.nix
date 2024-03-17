@@ -56,11 +56,12 @@ in {
             name = "generate-go-sri-${name}";
             runtimeInputs = [inputs'.generate-go-sri.packages.nardump pkgs.coreutils];
             text = ''
+              set -x
               temp="$(mktemp -d)"
               generated="$(mktemp -p . -t .generate-sri-${name}-XXXXXXX)";
               cleanup() {
-                [ -d "$temp" ] && rm -rf "$temp"
-                [ -f "$generated" ] && rm -f "$generated"
+                if [ -d "$temp" ] ; then rm -rf "$temp" ; fi
+                if [ -f "$generated" ] ; then rm -f "$generated" ; fi
               }
               trap 'cleanup' EXIT
               cd ${lib.escapeShellArg subdir} && go mod vendor -o "$temp"
