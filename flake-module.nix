@@ -54,10 +54,10 @@ in {
           name = "generate-sri-${name}";
           value.program = pkgs.writeShellApplication {
             name = "generate-go-sri-${name}";
-            runtimeInputs = [inputs'.generate-go-sri.packages.nardump];
+            runtimeInputs = [inputs'.generate-go-sri.packages.nardump pkgs.coreutils];
             text = ''
               temp="$(mktemp -d)"
-              generated="$(mktemp -p . -t .generate-sri-${name}-)";
+              generated="$(mktemp -p . -t .generate-sri-${name}-XXXXXXX)";
               cleanup() {
                 [ -d "$temp" ] && rm -rf "$temp"
                 [ -f "$generated" ] && rm -f "$generated"
