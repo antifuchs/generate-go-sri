@@ -26,11 +26,22 @@
 
         packages = {
           default = config.packages.nardump;
-          nardump = pkgs.buildGoPackage rec {
+          nardump = pkgs.buildGo123Module rec {
             pname = "nardump";
             version = inputs.tailscale.rev;
             src = "${inputs.tailscale}/cmd/nardump";
-            goPackagePath = "github.com/tailscale/tailscale/cmd/nardump";
+            vendorHash = null;
+
+            # Fake up a go module inside the nardump dir, so we don't
+            # have to download & cache the entirety of tailscale's
+            # deps:
+            prePatch = ''
+              cat >go.mod <<EOF
+              module github.com/tailscale/tailscale/cmd/nardump
+              go 1.23.0
+              require ()
+              EOF
+            '';
           };
         };
       };
