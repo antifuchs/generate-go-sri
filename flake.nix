@@ -3,6 +3,7 @@
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.tailscale.url = "github:tailscale/tailscale";
+  inputs.tailscale.flake = false;
 
   outputs = {
     self,
